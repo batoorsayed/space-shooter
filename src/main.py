@@ -25,7 +25,7 @@ class Player(pygame.sprite.Sprite):
         self.direction = (
             self.direction.normalize() if self.direction else self.direction
         )
-        self.rect.center += self.direction * self.speed * dt
+        self.rect.center += self.direction * self.speed * dt  # type: ignore
         if pygame.key.get_just_pressed()[pygame.K_SPACE]:
             print("pew")
 

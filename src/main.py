@@ -40,6 +40,7 @@ class Player(pygame.sprite.Sprite):
             Laser(laser_surface, self.rect.midtop, all_sprites, laser_sprites)  # type: ignore
             self.can_shoot = False
             self.laser_shot_time = pygame.time.get_ticks()
+            laser_sound.play()
 
         # Initiates laser_timer up above
         self.laser_timer()
@@ -111,6 +112,7 @@ class AnimatedExplosion(pygame.sprite.Sprite):
 # Collisions
 def collisions():
     global running
+    global meteors_shot
 
     collision_sprites = pygame.sprite.spritecollide(
         player, meteor_sprites, True, pygame.sprite.collide_mask
@@ -123,15 +125,22 @@ def collisions():
         if collided_sprites:
             laser.kill()
             AnimatedExplosion(explosion_frames, laser.rect.midtop, all_sprites)
+            explosion_sound.play()
+            meteors_shot += 1
 
 # Score
 def display_score():
-    current_time = pygame.time.get_ticks() // 1000
-    text_surf = font.render(f"Score: {str(current_time)}", True, (240, 240, 240))
-    text_rect = text_surf.get_frect(midbottom=(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50))
-    pygame.draw.rect(display_surface, (240, 240, 240), text_rect.inflate(20, 10).move(0, -8), 5, 10)
-    display_surface.blit(text_surf, text_rect)
+    global meteors_shot
 
+    current_time = pygame.time.get_ticks() // 1000
+    text_surf = font.render(
+        f"Score: {str(current_time + (meteors_shot * 10))}\n Meteors Shot: {str(meteors_shot)}",
+        True,
+        (240, 240, 240),
+    )
+    text_rect = text_surf.get_frect(midbottom=(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50))
+    pygame.draw.rect(display_surface, (240, 240, 240), text_rect.inflate(30, 20).move(0, -8), 5, 10)
+    display_surface.blit(text_surf, text_rect)
 
 # Init
 pygame.init()
@@ -141,6 +150,7 @@ display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Space Shooter")
 running = True
 clock = pygame.time.Clock()
+meteors_shot = 0
 
 
 # Import image | Join from os to make sure path is dynamic | convert the image for pygame
@@ -152,8 +162,17 @@ explosion_frames = [
     for i in range(21)
 ]
 
+# Import Sound
+laser_sound = pygame.mixer.Sound(join("..", "audio", "laser.wav"))
+laser_sound.set_volume(0.2)
+explosion_sound = pygame.mixer.Sound(join("..", "audio", "explosion.wav"))
+explosion_sound.set_volume(0.2)
+game_music = pygame.mixer.Sound(join("..", "audio", "game_music.wav"))
+game_music.set_volume(0.1)
+game_music.play()
+
 # Import Font
-font = pygame.font.Font(join("..", "images", "Oxanium-Bold.ttf"), size=40)
+font = pygame.font.Font(join("..", "images", "Oxanium-Bold.ttf"), size=30)
 
 
 # Create Sprite Group

@@ -1,0 +1,9 @@
+[project]
+name = "space-shooter"
+version = "0.1.0"
+description = "Simple space shooter game, built using Python. Introduction to PyGame-CE."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "pygame-ce>=2.5.6",
+]
